@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.rainerfaller.hsm.pi</groupId>
-    <artifactId>lightcontrol</artifactId>
+    <artifactId>pi-lightcontrol</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <parent>
