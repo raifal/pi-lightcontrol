@@ -1,9 +1,7 @@
 package de.rainerfaller.hsm.pi.lightcontrol;
 
 import org.apache.log4j.Logger;
-import org.apache.tomcat.websocket.WsWebSocketContainer;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.*;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Component;
@@ -12,16 +10,15 @@ import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
-import org.springframework.web.socket.sockjs.client.Transport;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 import org.springframework.web.socket.sockjs.frame.Jackson2SockJsMessageCodec;
 
-import javax.net.ssl.*;
+import javax.net.ssl.HttpsURLConnection;
 import java.lang.reflect.Type;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import java.util.*;
+import java.util.Base64;
+import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
 @Component
@@ -40,39 +37,9 @@ public class HelloClient {
     }
 
     public ListenableFuture<StompSession> connect() throws NoSuchAlgorithmException, KeyManagementException {
-
-// Create a trust manager that does not validate certificate chains
-        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                return null;
-            }
-
-            public void checkClientTrusted(X509Certificate[] certs, String authType) {
-            }
-
-            public void checkServerTrusted(X509Certificate[] certs, String authType) {
-            }
-        }
-        };
-
-        //  boolean trustAll = Boolean.getBoolean("org.eclipse.jetty.websocket.jsr356.ssl-trust-all");
-
-
-        /*SSLContext sslContext = SSLContext.getInstance("SSL");
-        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-        Map<String, Object> props = new HashMap<>();
-        props.put("org.apache.tomcat.websocket.SSL_CONTEXT", sslContext);*/
-
-
-        StandardWebSocketClient swsc = new StandardWebSocketClient();
-        // swsc.setUserProperties(props);
-
-        Transport webSocketTransport = new WebSocketTransport(swsc);
-
         HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> hostname.equals(hostname));
 
-        List<Transport> transports = Collections.singletonList(webSocketTransport);
-        SockJsClient sockJsClient = new SockJsClient(transports);
+        SockJsClient sockJsClient = new SockJsClient(Collections.singletonList(new WebSocketTransport(new StandardWebSocketClient())));
         sockJsClient.setMessageCodec(new Jackson2SockJsMessageCodec());
 
         ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
@@ -94,7 +61,6 @@ public class HelloClient {
         String base64Credentials = Base64.getEncoder().encodeToString(plainCredentials.getBytes());
         final WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
         headers.add("Authorization", "Basic " + base64Credentials);
-
 
         return stompClient.connect(url, headers, new MyHandler(), hostname, port);
     }
