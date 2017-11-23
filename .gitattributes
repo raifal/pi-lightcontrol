@@ -1,1 +1,2 @@
 *.sh eol=lf
+/scripts/pi-lightconrol eol=lf
