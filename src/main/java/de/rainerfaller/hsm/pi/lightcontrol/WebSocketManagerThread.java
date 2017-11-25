@@ -14,7 +14,7 @@ public class WebSocketManagerThread {
     private static Logger logger = Logger.getLogger(WebSocketManagerThread.class);
 
     @Autowired
-    private HelloClient helloClient;
+    private WebSocketClient webSocketClient;
 
     @PostConstruct
     public void init() {
@@ -25,13 +25,13 @@ public class WebSocketManagerThread {
             if (stompSession == null || !stompSession.isConnected()) {
                 try {
 
-                    ListenableFuture<StompSession> f = helloClient.connect();
+                    ListenableFuture<StompSession> f = webSocketClient.connect();
                     stompSession = f.get();
-                    logger.info("Subscribing to greeting topic using session " + stompSession);
-                    helloClient.subscribeTopic(stompSession);
+                    logger.info("Subscribing to topic using session " + stompSession);
+                    webSocketClient.subscribeTopic(stompSession);
 
-                    logger.info("Sending hello message" + stompSession);
-                    helloClient.sendTestMessage(stompSession);
+                    logger.info("Sending request for light inventory" + stompSession);
+                    webSocketClient.requestLightInventory(stompSession);
                 } catch (Throwable t) {
                     logger.error("" + t.getMessage());
                 }
@@ -43,7 +43,7 @@ public class WebSocketManagerThread {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            logger.info("loop");
+            logger.debug("loop");
         }
     }
 }

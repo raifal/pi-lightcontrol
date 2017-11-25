@@ -13,7 +13,7 @@ public class Application {
     private static Logger logger = LoggerFactory.getLogger(Application.class.getName());
 
     public static void main(String[] args) throws Exception {
-        logger.warn("MyMessage");
+        logger.info("Starting Server");
         SpringApplication.run(new Object[]{Application.class}, args);
     }
 }
