@@ -13,7 +13,7 @@
         </triggeringPolicy>
 
         <encoder>
-            <pattern>%d{yy-MMMM-dd HH:mm:ss:SSS} %5p %t %c{2}:%L - %m%n</pattern>
+            <pattern>%d{dd-MMM-yyyy HH:mm:ss:SSS} %5p %t %c{2}:%L - %m%n</pattern>
         </encoder>
     </appender>
 

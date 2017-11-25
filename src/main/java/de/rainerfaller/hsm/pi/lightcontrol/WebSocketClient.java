@@ -95,6 +95,9 @@ public class WebSocketClient {
 
                 logger.info("Received pi request: " + piRequest);
 
+                new LightController().execute(piRequest);
+
+
                 PiResponse piResponse = new PiResponse();
                 Map<String, LightStatus> lightStatus = new HashMap<>();
                 lightStatus.put("li ght 12", LightStatus.OFF);
