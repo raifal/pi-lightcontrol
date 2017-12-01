@@ -25,10 +25,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @Component
@@ -97,11 +94,17 @@ public class WebSocketClient {
 
                 new LightController().execute(piRequest);
 
-
                 PiResponse piResponse = new PiResponse();
                 Map<String, LightStatus> lightStatus = new HashMap<>();
-                lightStatus.put("li ght 12", LightStatus.OFF);
+
+                DeviceManager deviceManager = new DeviceManager();
+                List<String> lightSwitchIds = deviceManager.allLightSwitchDeviceIds();
+                for ( String id: lightSwitchIds )
+                {
+                    lightStatus.put(id, deviceManager.lightStatus(id));
+                }
                 piResponse.setLightStatus(lightStatus);
+
 
                 respondDeviceStatus(piResponse);
             }
