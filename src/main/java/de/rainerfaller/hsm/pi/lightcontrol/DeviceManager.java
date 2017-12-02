@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 public class DeviceManager {
+    public static final String COMMAND_CLASS_SWITCH_BINARY = "0x25";
+
     private static Logger logger = LoggerFactory.getLogger(DeviceManager.class.getName());
 
     public void getLightStatus() {
@@ -27,14 +29,13 @@ public class DeviceManager {
     public void switchLight(String deviceId, LightStatus status) {
         // http://razberry.z-wave.me/docs/zwayDev.pdf
         String level = LightStatus.ON.equals(status) ? "255" : "0";
-        String command = "devices[" + deviceId + "].instances[0].commandClasses[0x25].Set(" + level + ")";
+        String command = "devices[" + deviceId + "].instances[0].commandClasses[" + COMMAND_CLASS_SWITCH_BINARY + "].Set(" + level + ")";
 
         executeZWaveCommand(command);
     }
 
     public LightStatus lightStatus(String deviceId) {
-        //http://192.168.1.66:8083/ZWaveAPI/Run/devices[8].instances[0].commandClasses[0x25].data.level.value
-        String command = "devices[" + deviceId + "].instances[0].commandClasses[0x25].data.level.value";
+        String command = "devices[" + deviceId + "].instances[0].commandClasses[" + COMMAND_CLASS_SWITCH_BINARY + "].data.level.value";
 
         String result = executeZWaveCommand(command);
         return new Boolean(result) ? LightStatus.ON : LightStatus.OFF;
@@ -55,6 +56,7 @@ public class DeviceManager {
                     continue;
                 }
 
+                // 37 = command class switch binary
                 if (device.instances.containsKey("0")
                         && device.instances.get("0").commandClasses.containsKey("37")) {
                     result.add(device.id);
